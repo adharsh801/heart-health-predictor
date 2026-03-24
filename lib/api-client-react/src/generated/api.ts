@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  HealthStatus,
+  PredictionInput,
+  PredictionResult,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Takes patient medical features and returns a heart disease prediction
+ * @summary Predict heart disease
+ */
+export const getPredictHeartDiseaseUrl = () => {
+  return `/api/predict`;
+};
+
+export const predictHeartDisease = async (
+  predictionInput: PredictionInput,
+  options?: RequestInit,
+): Promise<PredictionResult> => {
+  return customFetch<PredictionResult>(getPredictHeartDiseaseUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(predictionInput),
+  });
+};
+
+export const getPredictHeartDiseaseMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof predictHeartDisease>>,
+    TError,
+    { data: BodyType<PredictionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof predictHeartDisease>>,
+  TError,
+  { data: BodyType<PredictionInput> },
+  TContext
+> => {
+  const mutationKey = ["predictHeartDisease"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof predictHeartDisease>>,
+    { data: BodyType<PredictionInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return predictHeartDisease(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PredictHeartDiseaseMutationResult = NonNullable<
+  Awaited<ReturnType<typeof predictHeartDisease>>
+>;
+export type PredictHeartDiseaseMutationBody = BodyType<PredictionInput>;
+export type PredictHeartDiseaseMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Predict heart disease
+ */
+export const usePredictHeartDisease = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof predictHeartDisease>>,
+    TError,
+    { data: BodyType<PredictionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof predictHeartDisease>>,
+  TError,
+  { data: BodyType<PredictionInput> },
+  TContext
+> => {
+  return useMutation(getPredictHeartDiseaseMutationOptions(options));
+};

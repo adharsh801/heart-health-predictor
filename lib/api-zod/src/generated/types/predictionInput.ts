@@ -5,9 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export interface PredictionInput {
   /** Age of the patient */
@@ -36,17 +33,4 @@ export interface PredictionInput {
   num_major_vessels: number;
   /** Thalassemia (0-3) */
   thalassemia: number;
-}
-
-export interface PredictionResult {
-  /** Prediction result (0 = low risk, 1 = high risk) */
-  prediction: number;
-  /** Probability of heart disease (0-1) */
-  probability: number;
-  /** Human-readable risk level (Low Risk or High Risk) */
-  risk_level: string;
-}
-
-export interface ErrorResponse {
-  error: string;
 }

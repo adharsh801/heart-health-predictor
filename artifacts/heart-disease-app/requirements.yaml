@@ -1,0 +1,13 @@
+packages:
+  "framer-motion": "Smooth entry animations for the prediction results card"
+  "@hookform/resolvers": "Zod schema validation resolver for react-hook-form"
+  "react-hook-form": "Performant, flexible and extensible forms with easy-to-use validation"
+
+images:
+  - path: "artifacts/heart-disease-app/public/images/hero-medical-bg.png"
+    description: "Abstract elegant 3D geometric shapes in clean white and light medical blue, soft lighting, depth of field, premium healthcare tech aesthetic, subtle"
+    aspect_ratio: "16:9"
+
+notes:
+  - "The backend API is proxied to a Python Flask ML service at /api/predict"
+  - "React Query hooks are imported from @workspace/api-client-react"

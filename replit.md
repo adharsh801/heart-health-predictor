@@ -16,6 +16,25 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Heart Disease Prediction App
+
+### Services
+- **Heart Disease Prediction frontend** (`artifacts/heart-disease-app`): React + Vite web app at `/`
+- **Python ML Service** (`artifacts/ml-service`): Flask API serving predictions on port 5001 at `/ml/*`
+- **API Server** (`artifacts/api-server`): Express API at `/api`, proxies `/api/predict` → ML service
+
+### ML Model
+- Dataset: `artifacts/ml-service/heart_disease_dataset.csv` (400 samples)
+- Algorithm: Random Forest Classifier (100 trees, max_depth=10)
+- Features: 13 medical features (age, sex, chest pain type, blood pressure, cholesterol, etc.)
+- Model saved to: `artifacts/ml-service/model.pkl` + `artifacts/ml-service/scaler.pkl`
+- Accuracy: ~86%
+
+### Workflows
+- `ML Service`: `python3 artifacts/ml-service/app.py` (port 5001)
+- `artifacts/api-server: API Server`: Express dev server
+- `artifacts/heart-disease-app: web`: Vite dev server
+
 ## Structure
 
 ```text

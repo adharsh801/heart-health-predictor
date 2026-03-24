@@ -14,3 +14,45 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Takes patient medical features and returns a heart disease prediction
+ * @summary Predict heart disease
+ */
+export const PredictHeartDiseaseBody = zod.object({
+  age: zod.number().describe("Age of the patient"),
+  sex: zod.number().describe("Sex (0 = female, 1 = male)"),
+  chest_pain_type: zod.number().describe("Chest pain type (0-3)"),
+  resting_blood_pressure: zod
+    .number()
+    .describe("Resting blood pressure in mmHg"),
+  cholesterol: zod.number().describe("Serum cholesterol in mg\/dl"),
+  fasting_blood_sugar: zod
+    .number()
+    .describe("Fasting blood sugar > 120 mg\/dl (0 = false, 1 = true)"),
+  resting_ecg: zod.number().describe("Resting ECG results (0-2)"),
+  max_heart_rate: zod.number().describe("Maximum heart rate achieved"),
+  exercise_induced_angina: zod
+    .number()
+    .describe("Exercise induced angina (0 = no, 1 = yes)"),
+  st_depression: zod
+    .number()
+    .describe("ST depression induced by exercise relative to rest"),
+  st_slope: zod
+    .number()
+    .describe("Slope of the peak exercise ST segment (0-2)"),
+  num_major_vessels: zod
+    .number()
+    .describe("Number of major vessels colored by fluoroscopy (0-3)"),
+  thalassemia: zod.number().describe("Thalassemia (0-3)"),
+});
+
+export const PredictHeartDiseaseResponse = zod.object({
+  prediction: zod
+    .number()
+    .describe("Prediction result (0 = low risk, 1 = high risk)"),
+  probability: zod.number().describe("Probability of heart disease (0-1)"),
+  risk_level: zod
+    .string()
+    .describe("Human-readable risk level (Low Risk or High Risk)"),
+});

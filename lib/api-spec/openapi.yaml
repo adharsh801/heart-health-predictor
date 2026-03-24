@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: prediction
+    description: Heart disease prediction operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /predict:
+    post:
+      operationId: predictHeartDisease
+      tags: [prediction]
+      summary: Predict heart disease
+      description: Takes patient medical features and returns a heart disease prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictionInput"
+      responses:
+        "200":
+          description: Prediction result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictionResult"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,82 @@ components:
           type: string
       required:
         - status
-
+    PredictionInput:
+      type: object
+      properties:
+        age:
+          type: number
+          description: Age of the patient
+        sex:
+          type: number
+          description: Sex (0 = female, 1 = male)
+        chest_pain_type:
+          type: number
+          description: Chest pain type (0-3)
+        resting_blood_pressure:
+          type: number
+          description: Resting blood pressure in mmHg
+        cholesterol:
+          type: number
+          description: Serum cholesterol in mg/dl
+        fasting_blood_sugar:
+          type: number
+          description: Fasting blood sugar > 120 mg/dl (0 = false, 1 = true)
+        resting_ecg:
+          type: number
+          description: Resting ECG results (0-2)
+        max_heart_rate:
+          type: number
+          description: Maximum heart rate achieved
+        exercise_induced_angina:
+          type: number
+          description: Exercise induced angina (0 = no, 1 = yes)
+        st_depression:
+          type: number
+          description: ST depression induced by exercise relative to rest
+        st_slope:
+          type: number
+          description: Slope of the peak exercise ST segment (0-2)
+        num_major_vessels:
+          type: number
+          description: Number of major vessels colored by fluoroscopy (0-3)
+        thalassemia:
+          type: number
+          description: Thalassemia (0-3)
+      required:
+        - age
+        - sex
+        - chest_pain_type
+        - resting_blood_pressure
+        - cholesterol
+        - fasting_blood_sugar
+        - resting_ecg
+        - max_heart_rate
+        - exercise_induced_angina
+        - st_depression
+        - st_slope
+        - num_major_vessels
+        - thalassemia
+    PredictionResult:
+      type: object
+      properties:
+        prediction:
+          type: number
+          description: Prediction result (0 = low risk, 1 = high risk)
+        probability:
+          type: number
+          description: Probability of heart disease (0-1)
+        risk_level:
+          type: string
+          description: Human-readable risk level (Low Risk or High Risk)
+      required:
+        - prediction
+        - probability
+        - risk_level
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
